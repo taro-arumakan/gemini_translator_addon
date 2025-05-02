@@ -3,74 +3,167 @@
 
 <head>
   <base target="_top">
-</head>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f9f9f9;
+    }
 
+    #sidebar {
+      width: 300px;
+      padding: 20px;
+      background-color: #ffffff;
+      border-right: 2px solid #e0e0e0;
+      box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+      font-size: 1.5em;
+      margin: 0;
+      color: #333;
+    }
+
+    label {
+      display: block;
+      margin: 10px 0 5px;
+      font-weight: bold;
+      color: #555;
+    }
+
+    input[type="text"],
+    select {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+
+    button {
+      display: block;
+      width: 100%;
+      padding: 10px;
+      font-size: 1em;
+      font-weight: bold;
+      color: #fff;
+      background-color: #4caf50;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    footer {
+      margin-top: 20px;
+      font-size: 0.8em;
+      color: #888;
+      text-align: center;
+    }
+
+    /* Spinner styling */
+    #spinner {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 50px;
+      height: 50px;
+      border: 5px solid #ccc;
+      border-top-color: #1d72b8;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      from {
+        transform: translate(-50%, -50%) rotate(0deg);
+      }
+      to {
+        transform: translate(-50%, -50%) rotate(360deg);
+      }
+    }
+  </style>
+</head>
 <body>
   <h3>Translation Configuration</h3>
   <form id="configForm">
     <label for="titleCol">Title Column:</label><br>
-    <input type="text" id="titleCol" name="titleCol" value="B"><br><br>
+    <input type="text" id="titleCol" name="titleCol" value="F"><br><br>
 
     <label for="descriptionSrc">Description Source Column:</label><br>
     <input type="text" id="descriptionSrc" name="descriptionSrc" value="I"><br><br>
 
     <label for="descriptionDest">Description Destination Column:</label><br>
-    <input type="text" id="descriptionDest" name="descriptionDest" value="J"><br><br>
+    <input type="text" id="descriptionDest" name="descriptionDest" value="AA"><br><br>
 
     <label for="materialSrc">Material Source Column:</label><br>
     <input type="text" id="materialSrc" name="materialSrc" value="M"><br><br>
 
     <label for="materialDest">Material Destination Column:</label><br>
-    <input type="text" id="materialDest" name="materialDest" value="N"><br><br>
+    <input type="text" id="materialDest" name="materialDest" value="AB"><br><br>
 
     <label for="sizeSrc">Size Text Source Column:</label><br>
     <input type="text" id="sizeSrc" name="sizeSrc" value="O"><br><br>
 
     <label for="sizeDest">Size Text Destination Column:</label><br>
-    <input type="text" id="sizeDest" name="sizeDest" value="P"><br><br>
+    <input type="text" id="sizeDest" name="sizeDest" value="AC"><br><br>
 
-    <label for="headersToSkip">Number of rows to skip (header rows)</label><br>
-    <input type="text" id="headersToSkip" name="headersToSkip" value="1"><br><br>
+    <label for="headerRowsToSkip">Number of rows to skip (header rows)</label><br>
+    <input type="number" id="headerRowsToSkip" name="headerRowsToSkip" value="1"><br><br>
+
+    <button type="button" onclick="submitConfig()">Save and Start</button>
+    <div id="spinner"></div>
 
     <h3>Prompt Templates</h3>
     <label for="descriptionPrompt">Description Prompt Template:</label><br>
     <textarea id="descriptionPrompt" name="descriptionPrompt" rows="4" cols="50">
-翻訳して自然な文章にまとめ、{{product_title}}という商品のページに載せる紹介文にして下さい:
+翻訳して自然な文章にまとめ、{{product_title}}という商品のページに載せる紹介文にして下さい。作文にあたっては、箇条書きではなく自然な構文で下記の特徴を盛り込み、プレーンテキストとして保存するために余分なヘッダおよびフォーマット用のアスタリスクなどは追加しないようにしてください。
 {{korean_description}}
-
-作文にあたっては、箇条書きではなく自然な構文で上記の特徴を盛り込み、余分なヘッダなどは追加しないようにしてください。
     </textarea><br><br>
 
     <label for="sizeTextPrompt">Size Text Prompt Template:</label><br>
     <textarea id="sizeTextPrompt" name="sizeTextPrompt" rows="4" cols="50">
-商品のサイズ表および注意書きを日本語に翻訳して下さい。
+商品のサイズ表および注意書きを日本語に翻訳して下さい。プレーンテキストとして保存するために余分なコメントやヘッダおよびフォーマット用のアスタリスクなどは追加しないようにしてください。原文のスペースを保持して韓国語のみ日本語と置き換えて下さい。
 {{size_text}}
-
-余分なコメントやヘッダ、アスタリスクなどは追加しないようにしてください。
-原文のスペースを保持して韓国語のみ日本語と置き換えて下さい。
     </textarea><br><br>
 
     <label for="generalPrompt">General Prompt Template:</label><br>
     <textarea id="generalPrompt" name="generalPrompt" rows="4" cols="50">
-翻訳して自然な文章にまとめて下さい
+翻訳して自然な文章にまとめて下さい。プレーンテキストとして保存するために余分なコメントやヘッダおよびフォーマット用のアスタリスクなどは追加しないようにしてください。
 {{text}}
-
-余分なコメントやヘッダなどは追加しないようにしてください。
     </textarea><br><br>
-
-    <button type="button" onclick="submitConfig()">Save and Start</button>
   </form>
 
   <script>
     function submitConfig() {
+      document.getElementById('spinner').style.display = 'block';
       const formData = new FormData(document.getElementById('configForm'));
       const config = {};
       for (let [key, value] of formData.entries()) {
         config[key] = value;
       }
-      google.script.run.withSuccessHandler(() => {
-        alert('Configuration saved and process started!');
-      }).saveAndStartTranslation(config);
+      console.log(`config: ${config}`);
+      config['headerRowsToSkip'] = Number(config['headerRowsToSkip']);
+      google.script.run
+        .withSuccessHandler(() => {
+          // Hide the spinner on success
+          document.getElementById('spinner').style.display = 'none';
+          alert('Process completed successfully.');
+        })
+        .withFailureHandler(() => {
+          // Hide the spinner on failure and show an error message
+          document.getElementById('spinner').style.display = 'none';
+          alert('An error occurred during the process.');
+        })
+        .saveAndStartTranslation(config);
     }
   </script>
 </body>

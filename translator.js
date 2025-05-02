@@ -1,6 +1,9 @@
 function columnToIndex(column) {
-  const index = column.trim().toUpperCase().charCodeAt(0) - 64;
-  return index - 1;   // adjust to zero-based index
+  let index = 0;
+  for (let i = 0; i < column.length; i++) {
+    index = index * 26 + (column.charCodeAt(i) - 'A'.charCodeAt(0) + 1);
+  }
+  return index - 1;
 }
 
 function translate_text(prompt_template, replacements) {
@@ -19,32 +22,33 @@ function translateSheet(sheet, config) {
   for (let i = config.headerRowsToSkip; i < data.length; i++) {
     const row = data[i];
     const title = row[columnToIndex(config.titleCol)];
-    console.log(`${title}`);
     const korean_description = config.descriptionSrc ? row[columnToIndex(config.descriptionSrc)] : false;
     const korean_size_text = config.sizeSrc ? row[columnToIndex(config.sizeSrc)] : false;
     const korean_material = config.materialSrc ? row[columnToIndex(config.materialSrc)]: false;
 
     if (title) {
+      console.log(`translating ${title}`);
       if (korean_description){
-        console.log(`translating ${title}`);
+        console.log(`translating description:\n${korean_description}`);
         const translated_description = translate_text(config.descriptionPrompt, {
           product_title: title, korean_description: korean_description
         });
-        console.log(translated_description);
-        console.log(`row: ${i}`);
-        console.log(`column: ${columnIndexes.japanese_description}`);
-        // getRange row and column index is 1 base
-        sheet.getRange(i + 1, columnToIndex(config.descriptionDest) + 1).setValue(translated_description);
+        console.log(`translated:\n${translated_description}`);
+        console.log(`Updating row ${i + 1}, column ${columnToIndex(config.descriptionDest)} + 1}`);
+        sheet.getRange(`${config.descriptionDest}${i + 1}`).setValue(translated_description);
+
       }
       if (korean_size_text) {
+        console.log(`translating size text\n${korean_size_text}`);
         const translated_size_text = translate_text(config.sizeTextPrompt, { size_text: korean_size_text });
-        // getRange row and column index is 1 base
-        sheet.getRange(i + 1, columnToIndex(config.sizeDest) + 1).setValue(translated_size_text);
+        console.log(`translated:\n${translated_size_text}`);
+        sheet.getRange(`${config.sizeDest}${i + 1}`).setValue(translated_size_text);
       }
       if (korean_material) {
+        console.log(`translating material\n${korean_material}`);
         const translated_material = translate_text(config.generalPrompt, { text: korean_material });
-        // getRange row and column index is 1 base
-        sheet.getRange(i + 1, columnToIndex(config.materialDest) + 1).setValue(translated_material);
+        console.log(`translated:\n${translated_material}`);
+        sheet.getRange(`${config.materialDest}${i + 1}`).setValue(translated_material);
       }
       SpreadsheetApp.flush();
     }

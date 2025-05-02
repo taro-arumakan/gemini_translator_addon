@@ -5,9 +5,14 @@ function onOpen() {
     .addToUi();
 }
 
+function showSidebar() {
+  const html = HtmlService.createHtmlOutputFromFile('Sidebar')
+    .setTitle('Translation Configuration');
+  SpreadsheetApp.getUi().showSidebar(html);
+}
+
 function saveAndStartTranslation(config) {
   const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
-  const headersToSkip = config.headersToSkip.split(',').map(Number);
-
+  console.log(`starting to translate ${sheet}, ${config}`);
   translateSheet(sheet, config)
 }
