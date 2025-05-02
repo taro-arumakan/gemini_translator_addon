@@ -1,0 +1,1 @@
+# gemini_translator_addon
