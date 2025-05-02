@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <base target="_top">
+</head>
+
+<body>
+  <h3>Translation Configuration</h3>
+  <form id="configForm">
+    <label for="titleCol">Title Column:</label><br>
+    <input type="text" id="titleCol" name="titleCol" value="B"><br><br>
+
+    <label for="descriptionSrc">Description Source Column:</label><br>
+    <input type="text" id="descriptionSrc" name="descriptionSrc" value="I"><br><br>
+
+    <label for="descriptionDest">Description Destination Column:</label><br>
+    <input type="text" id="descriptionDest" name="descriptionDest" value="J"><br><br>
+
+    <label for="materialSrc">Material Source Column:</label><br>
+    <input type="text" id="materialSrc" name="materialSrc" value="M"><br><br>
+
+    <label for="materialDest">Material Destination Column:</label><br>
+    <input type="text" id="materialDest" name="materialDest" value="N"><br><br>
+
+    <label for="sizeSrc">Size Text Source Column:</label><br>
+    <input type="text" id="sizeSrc" name="sizeSrc" value="O"><br><br>
+
+    <label for="sizeDest">Size Text Destination Column:</label><br>
+    <input type="text" id="sizeDest" name="sizeDest" value="P"><br><br>
+
+    <label for="headersToSkip">Number of rows to skip (header rows)</label><br>
+    <input type="text" id="headersToSkip" name="headersToSkip" value="1"><br><br>
+
+    <h3>Prompt Templates</h3>
+    <label for="descriptionPrompt">Description Prompt Template:</label><br>
+    <textarea id="descriptionPrompt" name="descriptionPrompt" rows="4" cols="50">
+翻訳して自然な文章にまとめ、{{product_title}}という商品のページに載せる紹介文にして下さい:
+{{korean_description}}
+
+作文にあたっては、箇条書きではなく自然な構文で上記の特徴を盛り込み、余分なヘッダなどは追加しないようにしてください。
+    </textarea><br><br>
+
+    <label for="sizeTextPrompt">Size Text Prompt Template:</label><br>
+    <textarea id="sizeTextPrompt" name="sizeTextPrompt" rows="4" cols="50">
+商品のサイズ表および注意書きを日本語に翻訳して下さい。
+{{size_text}}
+
+余分なコメントやヘッダ、アスタリスクなどは追加しないようにしてください。
+原文のスペースを保持して韓国語のみ日本語と置き換えて下さい。
+    </textarea><br><br>
+
+    <label for="generalPrompt">General Prompt Template:</label><br>
+    <textarea id="generalPrompt" name="generalPrompt" rows="4" cols="50">
+翻訳して自然な文章にまとめて下さい
+{{text}}
+
+余分なコメントやヘッダなどは追加しないようにしてください。
+    </textarea><br><br>
+
+    <button type="button" onclick="submitConfig()">Save and Start</button>
+  </form>
+
+  <script>
+    function submitConfig() {
+      const formData = new FormData(document.getElementById('configForm'));
+      const config = {};
+      for (let [key, value] of formData.entries()) {
+        config[key] = value;
+      }
+      google.script.run.withSuccessHandler(() => {
+        alert('Configuration saved and process started!');
+      }).saveAndStartTranslation(config);
+    }
+  </script>
+</body>
+
+</html>
