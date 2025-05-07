@@ -12,19 +12,26 @@ function callGemini(prompt, temperature=0) {
           },
         ]
       }
-    ], 
+    ],
     "generationConfig":  {
       "temperature": temperature,
     },
   };
 
-  const options = { 
-    'method' : 'post',
+  const options = {
+    'method': 'post',
     'contentType': 'application/json',
-    'payload': JSON.stringify(payload)
+    'payload': JSON.stringify(payload),
+    muteHttpExceptions: true
   };
 
   const response = UrlFetchApp.fetch(geminiEndpoint, options);
+  const statusCode = response.getResponseCode();
+
+  if (statusCode !== 200) {
+    Logger.log(`Error: ${response.getContentText()}`);
+    throw new Error(`API request failed with status ${statusCode}`);
+  }
   const data = JSON.parse(response);
   const content = data["candidates"][0]["content"]["parts"][0]["text"];
   return content;
